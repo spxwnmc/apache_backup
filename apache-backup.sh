@@ -5,6 +5,7 @@ src_apache="/etc/apache2/"
 src_www="/var/www/"
 dest_apache="/apache2/"
 dest_www="/www/"
+days_to_keep=2
 
 function error_msg () {
     echo -e "\e[0;31m\033[1m[!]\033[0m\e[0m ${1}"
@@ -27,4 +28,11 @@ function is_root() {
 function create_folders () {
     mkdir -p ${backup_path}/{${dest_apache},${dest_www}} &&\
         success_msg "Folders created successfully"
+}
+
+function delete_old_backups () {
+    if [ ${days_to_keep} -gt 0 ]; then
+        process_msg "Deleting backups older then ${days_to_keep} days"
+        find ${backup_path}/* -mtime +${days_to_keep} -exec rm {} \;
+    fi
 }

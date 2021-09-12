@@ -2,9 +2,10 @@
 
 backup_path="/tmp/backups_httpd/backup$(date +%F-%H-%M)"
 src_apache="/etc/apache2/"
-src_www="/var/www"
+src_www="/var/www/"
 compress_path="${backup_path}.tar.gz"
 days_to_keep=2
+ip_remote_host="192.168.100.65"
 
 function error_msg () {
     echo -e "\e[0;31m\033[1m[!]\033[0m\e[0m ${1}"
@@ -45,4 +46,27 @@ function compress_file () {
     tar -cpzf "${compress_path}"\
         ${src_apache}\
         ${src_www} &>/dev/null
+}
+
+function send_to_server () {
+    ssh spawn@${ip_remote_host} "mkdir -p /home/spawn/backups_httpd"
+    rsync -avzhe ssh ${compress_path} spawn@${ip_remote_host}:/home/spawn/backups_httpd &>/dev/null
+}
+
+function send_telegram_alert () {
+    userid="-1001360923905"
+    key="1627634127:AAEFVFK6cLfMqKHZFuoiUTTF4-3aVNOingg"
+    timeout="10"
+    url="https://api.telegram.org/bot${key}/sendMessage"
+    log="envio_telegram_${DATE}.log"
+    sonido=0
+    exec_date="$(date "+%d %b %H:%M:%S")"
+    if [[ $3 -eq 1 ]] ; then
+	    sonido=1
+    fi
+    process_msg "Sending a menssage to Telegram"
+    texto="<b>${exec_date}:</b>\n<pre>${1}</pre>\n${2}"
+    curl -s --max-time ${timeout} -d "parse_mode=HTML&disable_notification=\
+        ${sonido}&chat_id=${userid}&disable_web_page_preview=1&text=\
+        $(echo -e "${texto}")" $url &>/dev/null
 }

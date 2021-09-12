@@ -7,17 +7,27 @@ compress_path="${backup_path}.tar.gz"
 days_to_keep=2
 username_remote_host="spawn"
 ip_remote_host="192.168.100.65"
+date_proccess="$(date +%F-%H-%M-%S)"
+
+green="\e[0;32m\033[1m"
+resetc="\033[0m\e[0m"
+red="\e[0;31m\033[1m"
+blue="\e[0;34m\033[1m"
+yellow="\e[0;33m\033[1m"
+purple="\e[0;35m\033[1m"
+turquoise="\e[0;36m\033[1m"
+gray="\e[0;37m\033[1m"
 
 function error_msg () {
-    echo -e "\e[0;31m\033[1m[!]\033[0m\e[0m ${1}"
+    echo -e "${red}[!] ${yellow}${date_proccess}${resetc} ${1}"
 }
 
 function process_msg () {
-    echo -e "\e[0;34m\033[1m[+]\033[0m\e[0m ${1}"
+    echo -e "${blue}[-] ${yellow}${date_proccess}${resetc} ${1}"
 }
 
 function success_msg () {
-    echo -e "\e[0;32m\033[1m[+]\033[0m\e[0m ${1}"
+    echo -e "${green}[+] ${yellow}${date_proccess}${resetc} ${1}"
 }
 
 function help () {
@@ -62,12 +72,12 @@ function send_telegram_alert () {
     log="envio_telegram_${DATE}.log"
     sonido=0
     exec_date="$(date "+%d %b %H:%M:%S")"
-    if [[ $3 -eq 1 ]] ; then
+    if [[ ${3} -eq 1 ]] ; then
 	    sonido=1
     fi
     process_msg "Sending a menssage to Telegram"
     texto="<b>${exec_date}:</b>\n<pre>${1}</pre>\n${2}"
     curl -s --max-time ${timeout} -d "parse_mode=HTML&disable_notification=\
         ${sonido}&chat_id=${userid}&disable_web_page_preview=1&text=\
-        $(echo -e "${texto}")" $url &>/dev/null
+        $(echo -e "${texto}")" ${url} &>/dev/null
 }

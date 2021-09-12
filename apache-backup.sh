@@ -65,19 +65,18 @@ function send_to_server () {
 }
 
 function send_telegram_alert () {
-    userid="-1001360923905"
-    key="1627634127:AAEFVFK6cLfMqKHZFuoiUTTF4-3aVNOingg"
-    timeout="10"
-    url="https://api.telegram.org/bot${key}/sendMessage"
-    log="envio_telegram_${DATE}.log"
-    sonido=0
-    exec_date="$(date "+%d %b %H:%M:%S")"
-    if [[ ${3} -eq 1 ]] ; then
-	    sonido=1
-    fi
+    local userid="-1001360923905"
+    local key="1627634127:AAEFVFK6cLfMqKHZFuoiUTTF4-3aVNOingg"
+    local timeout="10"
+    local url="https://api.telegram.org/bot${key}/sendMessage"
+    local log="envio_telegram_${DATE}.log"
+    local sonido=0
+    local exec_date="$(date "+%d %b %H:%M:%S")"
+    [[ ${3} -eq 1 ]] && sonido=1
     process_msg "Sending a menssage to Telegram"
-    texto="<b>${exec_date}:</b>\n<pre>${1}</pre>\n${2}"
+    local texto="<b>${exec_date}:</b>\n<pre>${1}</pre>\n${2}"
     curl -s --max-time ${timeout} -d "parse_mode=HTML&disable_notification=\
         ${sonido}&chat_id=${userid}&disable_web_page_preview=1&text=\
-        $(echo -e "${texto}")" ${url} &>/dev/null
+        $(echo -e "${texto}")" ${url} &>/dev/null &&\
+        success_msg "Message to Telegram sent successfully"
 }

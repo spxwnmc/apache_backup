@@ -5,6 +5,7 @@ src_apache="/etc/apache2/"
 src_www="/var/www/"
 compress_path="${backup_path}.tar.gz"
 days_to_keep=2
+username_remote_host="spawn"
 ip_remote_host="192.168.100.65"
 
 function error_msg () {
@@ -49,8 +50,8 @@ function compress_file () {
 }
 
 function send_to_server () {
-    ssh spawn@${ip_remote_host} "mkdir -p /home/spawn/backups_httpd"
-    rsync -avzhe ssh ${compress_path} spawn@${ip_remote_host}:/home/spawn/backups_httpd &>/dev/null
+    ssh ${username_remote_host}@${ip_remote_host} "mkdir -p /home/spawn/backups_httpd"
+    rsync -avzhe ssh ${compress_path} ${username_remote_host}@${ip_remote_host}:/home/spawn/backups_httpd &>/dev/null
 }
 
 function send_telegram_alert () {

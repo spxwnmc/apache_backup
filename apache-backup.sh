@@ -31,12 +31,15 @@ function success_msg () {
 }
 
 function help () {
-    echo -e "\nUsage: $(basename ${backup_path})"
+    echo -e "\nUsage: 
+    # $(basename ${0})
+            or
+    sudo|doas $(basename ${0})"
 }
 
 function is_root() {
     if ((${EUID:-0} || "$(id -u)")); then
-        error_msg "This script must be run as root"; exit 1;
+        error_msg "This script must be run as root"; help; exit 1;
     fi
 }
 
